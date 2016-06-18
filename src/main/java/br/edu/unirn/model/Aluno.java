@@ -1,10 +1,13 @@
 package br.edu.unirn.model;
 
+import java.util.Date;
+
 public class Aluno {
 	
 	private int id;
 	private String nome;
 	private String matricula;
+	private Date dataCadastro = new Date();
 	
 	public int getId() {
 		return id;
@@ -23,6 +26,12 @@ public class Aluno {
 	}
 	public void setMatricula(String matricula) {
 		this.matricula = matricula;
+	}
+	public Date getDataCadastro() {
+		return dataCadastro;
+	}
+	public void setDataCadastro(Date dataCadastro) {
+		this.dataCadastro = dataCadastro;
 	}
 	
 }

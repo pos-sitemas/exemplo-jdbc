@@ -19,8 +19,12 @@ public class AlunoDAO {
 		connection = DriverManager.getConnection("jdbc:postgresql://127.0.0.1:5432/exemplo-jdbc", "exemplo-jdbc",
 				"exemplo-jdbc");
 		Statement statement = connection.createStatement();
-		String createAluno = "CREATE TABLE IF NOT EXISTS aluno(" + "id serial not null," + "nome VARCHAR(200) not null,"
-				+ "matricula VARCHAR(20)," + "PRIMARY KEY(id)" + ")";
+		String createAluno = "CREATE TABLE IF NOT EXISTS aluno(" + 
+					"id serial not null," + 
+					"nome VARCHAR(200) not null," + 
+					"matricula VARCHAR(20)," +
+					"data_cadastro timestamp with time zone DEFAULT now()," + 
+					"PRIMARY KEY(id)" + ")";
 		statement.executeUpdate(createAluno);
 		statement.close();
 	}
@@ -34,6 +38,7 @@ public class AlunoDAO {
 			a.setId(rs.getInt("id"));
 			a.setNome(rs.getString("nome"));
 			a.setMatricula(rs.getString("matricula"));
+			a.setDataCadastro(rs.getDate("data_cadastro")); //java.sql.Date -> java.util.Date
 			retorno.add(a);
 		}
 		rs.close();
@@ -42,18 +47,20 @@ public class AlunoDAO {
 	}
 
 	public void inserir(Aluno aluno) throws Exception {
-		PreparedStatement pst = connection.prepareStatement("INSERT INTO aluno (nome,matricula) " + " VALUES (?,?)");
+		PreparedStatement pst = connection.prepareStatement("INSERT INTO aluno (nome,matricula,data_cadastro) " + " VALUES (?,?,?)");
 		pst.setString(1, aluno.getNome());
 		pst.setString(2, aluno.getMatricula());
+		pst.setDate(3, new java.sql.Date(aluno.getDataCadastro().getTime()));
 		pst.executeUpdate();
 		pst.close();
 	}
 
 	public void alterar(Aluno aluno) throws Exception {
-		PreparedStatement pst = connection.prepareStatement("UPDATE aluno SET nome=?,matricula=? WHERE id=?");
+		PreparedStatement pst = connection.prepareStatement("UPDATE aluno SET nome=?,matricula=?,data_cadastro=? WHERE id=?");
 		pst.setString(1, aluno.getNome());
 		pst.setString(2, aluno.getMatricula());
-		pst.setInt(3, aluno.getId());
+		pst.setDate(3, new java.sql.Date(aluno.getDataCadastro().getTime()));
+		pst.setInt(4, aluno.getId());
 		pst.executeUpdate();
 		pst.close();
 	}
@@ -68,6 +75,7 @@ public class AlunoDAO {
 			aluno.setId(rs.getInt("id"));
 			aluno.setNome(rs.getString("nome"));
 			aluno.setMatricula(rs.getString("matricula"));
+			aluno.setDataCadastro(rs.getDate("data_cadastro")); //java.sql.Date -> java.util.Date
 		}
 		rs.close();
 		pst.close();
@@ -82,17 +90,18 @@ public class AlunoDAO {
 
 	}
 
-	public ArrayList<Aluno> findAllByNome(String nome) throws Exception{
+	public ArrayList<Aluno> findAllByNome(String nome) throws Exception {
 		ArrayList<Aluno> retorno = new ArrayList<Aluno>();
 		PreparedStatement pst = connection.prepareStatement("select * from aluno where upper(nome) like ?");
 		int pos = 0;
-		pst.setString(++pos, nome+"%".toUpperCase());
+		pst.setString(++pos, nome + "%".toUpperCase());
 		ResultSet rs = pst.executeQuery();
 		while (rs.next()) {
 			Aluno a = new Aluno();
 			a.setId(rs.getInt("id"));
 			a.setNome(rs.getString("nome"));
 			a.setMatricula(rs.getString("matricula"));
+			a.setDataCadastro(rs.getDate("data_cadastro")); //java.sql.Date -> java.util.Date
 			retorno.add(a);
 		}
 		rs.close();

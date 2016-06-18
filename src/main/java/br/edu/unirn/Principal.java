@@ -21,6 +21,7 @@ public class Principal {
 					+ "id serial not null,"
 					+ "nome VARCHAR(200) not null,"
 					+ "matricula VARCHAR(20),"
+					+ "data_cadastro timestamp with time zone DEFAULT now()"
 					+ "PRIMARY KEY(id)"
 					+ ")";
 			statement.executeUpdate(createAluno);
